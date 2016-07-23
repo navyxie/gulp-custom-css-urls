@@ -40,6 +40,7 @@ gulp.task('default',['demo']);
 
 //css file content, input:
 > div{background-image: url('/images/example.png');}
+
 // output filename formats: (filename + '_' + imgWidth + '_' + imgHeight + '.' + crc32 + ext)
 > div{background-image: url('/images/example_width_height.hash.png');}
 
