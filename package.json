@@ -1,9 +1,12 @@
 {
   "name": "gulp-custom-css-urls",
-  "version": "0.0.0",
-  "description": "a gulp plugin custom url inline in css",
+  "version": "0.0.1",
+  "description": "a gulp plugin custom image url inline in css",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "npm install && mocha --recursive test/",
+    "cov": "npm install && ./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/navyxie/gulp-custom-css-urls.git"
@@ -11,14 +14,29 @@
   "keywords": [
     "gulp",
     "css",
-    "image"
+    "image",
+    "publish",
+    "web",
+    "frontend"
   ],
   "dependencies": {
     "buffer-crc32": "^0.2.5",
+    "gulp-rename": "^1.2.2",
     "image-size": "^0.5.0",
-    "reword": "^0.2.0",
-    "rework-plugin-url": "^1.1.0",
-    "through2": "^2.0.1"
+    "lodash": "^4.13.1",
+    "rework": "^1.0.1",
+    "rework-plugin-url": "^1.0.1",
+    "through2": "2.0.1",
+    "vinyl-fs": "^2.4.3"
+  },
+  "devDependencies": {
+    "coveralls": "2.11.9",
+    "exec-sync": "^0.1.6",
+    "istanbul": "^0.4.3",
+    "mocha": "^2.2.5",
+    "should": "^7.0.2",
+    "through2": "2.0.1",
+    "vinyl-fs": "^2.4.3"
   },
   "author": {
     "name": "navyxie"

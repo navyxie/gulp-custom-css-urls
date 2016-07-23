@@ -1,0 +1,14 @@
+language: node_js
+
+repo_token: 8ijKDgHIO7DtTSrWY0ph3HYA8uAK21WQu
+
+node_js:  
+
+  - 0.10.35
+
+script: npm test
+
+after_script: npm run cov
+
+after_success: 
+  "curl -L -l https://coveralls.io/repos/github/navyxie/gulp-custom-css-urls/badge.svg?branch=master"

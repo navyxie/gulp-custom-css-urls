@@ -1,3 +1,5 @@
 node_modules
 coverage
 npm-debug.log
+.DS_Store
+.test_dist_img
