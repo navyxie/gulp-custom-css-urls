@@ -41,7 +41,7 @@
   "author": {
     "name": "navyxie"
   },
-  "license": "ISC",
+  "license": "MIT",
   "homepage": "https://github.com/navyxie/gulp-custom-css-urls",
   "maintainers": [
     {
