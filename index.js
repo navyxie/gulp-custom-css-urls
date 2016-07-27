@@ -25,7 +25,7 @@ function syncFileToBuffer (filepath) {
 }
 
 
-function customUrls (file, options, cb) {
+function customUrls (file, options) {
 
   // css
   var filePath = file.path;
@@ -107,8 +107,7 @@ function customUrls (file, options, cb) {
     return formattedUrl;
 
   })).toString();
-  
-  cb(null, formattedContents);
+  return formattedContents;
 };
 
 module.exports = function (options) {
@@ -116,18 +115,12 @@ module.exports = function (options) {
     options = {};
   }
   return through2.obj(function(file, enc, cb) {
-    var that = this;
     if (file.isNull()) {
       return cb(null, file);
     }
-    var customedContents = customUrls(file, options, function (err, customedContents) {
-      if (err) {
-        return cb(err);
-      } else {
-        file.contents = new Buffer(customedContents);
-        that.push(file);
-        return cb(null, file);
-      }
-    });
+    var customedContents = customUrls(file, options);
+    file.contents = new Buffer(customedContents);
+    this.push(file);
+    return cb();
   });
 }
