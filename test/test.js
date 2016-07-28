@@ -70,6 +70,22 @@ describe('gulp-custom-css-urls', function() {
       }))
       .pipe(vfs.dest('./.test_dist_jade'))
   });
+  it('html -> should be ok if image url is relative to website root path', function () {
+    vfs.src('test/views/test.html')
+      .pipe(customCssUrls({
+        staticfile_relative_website_rootpath: staticfile_relative_website_rootpath,
+        modify: function (imageRelativePath, cssFilePath, imageRelativeWebsiteRootPath, imgInfo) {
+          imageRelativePath.should.equal('example_1968_920.1373564769.png');
+          imageRelativeWebsiteRootPath.should.equal('/images');
+          imgInfo.should.have.properties({hash: 1373564769, width: 1968, height: 920, orgin_filename: 'example.png' });
+          return path.join(imageRelativeWebsiteRootPath, imageRelativePath);
+        },
+        outputImage: true,
+        ext: 'jade',
+        outputImage_path: './.test_dist_img'
+      }))
+      .pipe(vfs.dest('./.test_dist_jade'))
+  });
   after(function(done){
     setTimeout(function () {
       execSync("rm -r " + path.join(process.cwd(), './.test_dist_img'));
