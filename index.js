@@ -29,6 +29,15 @@ var extList = ['.BMP', '.JPG', '.JPEG', '.PNG', '.GIF'];
 function isInExtList (ext) {
   return (_.indexOf(extList, ext) !== -1);
 }
+
+function isIndexOfInArr (arr, str) {
+  for (var i = 0 ; i < arr.length ; i++) {
+    if (str.indexOf(arr[i]) !== -1) {
+      return true;
+    }
+  }
+  return false;
+}
 /**
  * filePath current filepath
  * url staticfile(image) url
@@ -68,10 +77,8 @@ function formatUrl (filePath, url, options) {
     }
 
     //skip when url contain skip character
-    for (var i = 0 ; i < skip.length ; i++) {
-      if (formattedUrl.indexOf(skip[i]) !== -1) {
-        return formattedUrl;
-      }
+    if (isIndexOfInArr(skip, formattedUrl)) {
+      return formattedUrl;
     }
 
     // skip when static file not in extList
@@ -141,11 +148,12 @@ function formatUrl (filePath, url, options) {
  * @return {[type]}              [description]
  */
 function customContent (fileContents, filePath, options) {
-  var imgReg = /src=['"]?([^'"]*)['"]?/ig;
-  var srcReg = /(src=)['"]?([^'"]*)['"]?/i;
+  var imgReg = /src([\s]+)?=([\s]+)?['"]?([^'"]*)['"]?/ig;
+  var srcReg = /(src([\s]+)?=([\s]+)?)['"]?([^'"]*)['"]?/i;
+  var skip = options.skip || [];
   fileContents = fileContents.replace(imgReg, function (srcStr) {
-    return srcStr.replace(srcReg, function (originStr, srcEqualStr, imageUrl) {
-      if (srcEqualStr && imageUrl && isInExtList(path.extname(imageUrl).toUpperCase())) {
+    return srcStr.replace(srcReg, function (originStr, srcEqualStr, leftSpace, rightSpace, imageUrl, index) {
+      if (srcEqualStr && imageUrl && isInExtList(path.extname(imageUrl).toUpperCase()) && !isIndexOfInArr(skip, imageUrl)) {
         return srcEqualStr + "'" + formatUrl(filePath, imageUrl, options) + "'";
       } else {
         return srcStr;

@@ -83,6 +83,7 @@ describe('gulp-custom-css-urls', function() {
         },
         outputImage: true,
         ext: 'html',
+        skip: ['{'],
         outputImage_path: './.test_dist_img'
       }))
       .pipe(vfs.dest('./.test_dist_jade'))

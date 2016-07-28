@@ -86,6 +86,13 @@ gulp.task('originTemplateContent',['returnToOrigin']);
 
 ## change log
 
+- 0.3.0
+
+  ```
+  feature support:
+    image src support leftspace and rightspace.
+  ```
+
 - 0.2.2
 
   ```
