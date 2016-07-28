@@ -34,11 +34,11 @@ var extList = ['.BMP', '.JPG', '.JPEG', '.PNG', '.GIF'];
 
 function formatUrl (filePath, url, options) {
   var cssDirname = path.dirname(filePath);
-
   // options
   var modify = options.modify; // function you can modify return url before prepend or append
   var prepend = options.prepend;
   var append = options.append;
+  var skip = options.skip || [];
   var outputImage = options.outputImage; // output images
   var outputImage_path = options.outputImage_path || './.gulp_dist_output_images'; // output images filepath
   var relative_root = options.staticfile_relative_website_rootpath || ''; //static filepath relative absolute filepath's physical position. (eg: /images/demo.png, absoulte filepath is /Users/Navy/Desktop/code/demo/assets/images/demo.png, process.cwd() is  /Users/Navy/Desktop/code/demo, so the relative_root is assets)
@@ -46,69 +46,79 @@ function formatUrl (filePath, url, options) {
 
   var formattedUrl = url; // image origin filepath
   var imgAbsolutePath = formattedUrl; // image absolute filepath
+  try {
+    //if images url is data:base64 , continue
+    if (formattedUrl.indexOf('data:') === 0) {
+      return formattedUrl;
+    }
+    // if images url is netword file , continue
+    if (/^(http|https|ftp|\/\/)/gi.test(formattedUrl)) {
+      return formattedUrl;
+    }
 
-  //if images url is data:base64 , continue
-  if (formattedUrl.indexOf('data:') === 0) {
-    return formattedUrl;
+    //skip when url contain skip character
+    for (var i = 0 ; i < skip.length ; i++) {
+      if (formattedUrl.indexOf(skip[i]) !== -1) {
+        return formattedUrl;
+      }
+    }
+
+    // skip when static file not in extList
+    if (_.indexOf(extList, path.extname(formattedUrl).toUpperCase()) === -1) {
+      return formattedUrl;
+    }
+
+    // image filepath is relative to website root
+    if (/^(\/)/gi.test(formattedUrl)) {
+      imgAbsolutePath = path.join(processPath, relative_root, formattedUrl);
+    } else {
+      // image filepath is a relative path
+      imgAbsolutePath = path.resolve(cssDirname, formattedUrl);
+    }
+
+    // images filename info
+    var imgExt = path.extname(formattedUrl);
+    var imgFileFullName = path.basename(formattedUrl);
+    var imgFileName = path.basename(formattedUrl, imgExt);
+    // image filepath relative website root path.
+    var img_relative_website_root_path = path.dirname(path.relative(relative_root, path.relative(processPath, imgAbsolutePath)));
+    
+    // calculate image file  crc32 value
+    var crc32 = bufferCrc32.unsigned(syncFileToBuffer(imgAbsolutePath));
+
+    // get image size info
+    var imgWH = imageSize(imgAbsolutePath);
+
+    //rename image, the format is ('imgFileName' + '_' + 'imageWidth' + '_' + 'imageHeight' + 'imageCrc32Value' + 'imageExt');
+    formattedUrl = imgFileName + '_' + imgWH.width + '_' + imgWH.height + '.' + crc32 + imgExt;
+
+    // if need to output match's images, do it.
+    if (outputImage) {
+      var outputBasename = path.basename(formattedUrl);
+      var outputDirname = path.join(outputImage_path, img_relative_website_root_path);
+      var outputFilepath = path.join(processPath, outputDirname, outputBasename);
+      console.info('output image file from: ', imgAbsolutePath, ' to: ', outputFilepath);
+      // copy image form imgAbsolutePath to outputFilepath
+      vfs.src(imgAbsolutePath).pipe(rename({basename:path.basename(outputFilepath, imgExt)})).pipe(vfs.dest(path.dirname(outputFilepath)));
+    }
+
+    // mofify url
+    if (_.isFunction(modify)) {
+      formattedUrl = modify(formattedUrl, filePath, '/' + img_relative_website_root_path, {hash: crc32, width: imgWH.width, height: imgWH.height, orgin_filename: imgFileFullName});
+    }
+
+    // prepend string
+    if (typeof prepend === 'string') {
+      formattedUrl = prepend + formattedUrl;
+    }
+
+    // append string
+    if (typeof append === 'string') {
+      formattedUrl += append;
+    }
+  } catch (e) {
+
   }
-  // if images url is netword file , continue
-  if (/^(http|https|ftp|\/\/)/gi.test(formattedUrl)) {
-    return formattedUrl;
-  }
-
-  if (_.indexOf(extList, path.extname(formattedUrl).toUpperCase()) === -1) {
-    return formattedUrl;
-  }
-
-  // image filepath is relative to website root
-  if (/^(\/)/gi.test(formattedUrl)) {
-    imgAbsolutePath = path.join(processPath, relative_root, formattedUrl);
-  } else {
-    // image filepath is a relative path
-    imgAbsolutePath = path.resolve(cssDirname, formattedUrl);
-  }
-
-  // images filename info
-  var imgExt = path.extname(formattedUrl);
-  var imgFileFullName = path.basename(formattedUrl);
-  var imgFileName = path.basename(formattedUrl, imgExt);
-  // image filepath relative website root path.
-  var img_relative_website_root_path = path.dirname(path.relative(relative_root, path.relative(processPath, imgAbsolutePath)));
-  
-  // calculate image file  crc32 value
-  var crc32 = bufferCrc32.unsigned(syncFileToBuffer(imgAbsolutePath));
-
-  // get image size info
-  var imgWH = imageSize(imgAbsolutePath);
-
-  //rename image, the format is ('imgFileName' + '_' + 'imageWidth' + '_' + 'imageHeight' + 'imageCrc32Value' + 'imageExt');
-  formattedUrl = imgFileName + '_' + imgWH.width + '_' + imgWH.height + '.' + crc32 + imgExt;
-
-  // if need to output match's images, do it.
-  if (outputImage) {
-    var outputBasename = path.basename(formattedUrl);
-    var outputDirname = path.join(outputImage_path, img_relative_website_root_path);
-    var outputFilepath = path.join(processPath, outputDirname, outputBasename);
-    console.info('output image file from: ', imgAbsolutePath, ' to: ', outputFilepath);
-    // copy image form imgAbsolutePath to outputFilepath
-    vfs.src(imgAbsolutePath).pipe(rename({basename:path.basename(outputFilepath, imgExt)})).pipe(vfs.dest(path.dirname(outputFilepath)));
-  }
-
-  // mofify url
-  if (_.isFunction(modify)) {
-    formattedUrl = modify(formattedUrl, filePath, '/' + img_relative_website_root_path, {hash: crc32, width: imgWH.width, height: imgWH.height, orgin_filename: imgFileFullName});
-  }
-
-  // prepend string
-  if (typeof prepend === 'string') {
-    formattedUrl = prepend + formattedUrl;
-  }
-
-  // append string
-  if (typeof append === 'string') {
-    formattedUrl += append;
-  }
-
   return formattedUrl;
 }
 

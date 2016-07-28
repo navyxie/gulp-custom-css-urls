@@ -66,6 +66,7 @@ describe('gulp-custom-css-urls', function() {
         },
         outputImage: true,
         ext: 'jade',
+        // skip: ['{'],
         outputImage_path: './.test_dist_img'
       }))
       .pipe(vfs.dest('./.test_dist_jade'))
@@ -81,7 +82,7 @@ describe('gulp-custom-css-urls', function() {
           return path.join(imageRelativeWebsiteRootPath, imageRelativePath);
         },
         outputImage: true,
-        ext: 'jade',
+        ext: 'html',
         outputImage_path: './.test_dist_img'
       }))
       .pipe(vfs.dest('./.test_dist_jade'))
@@ -91,6 +92,6 @@ describe('gulp-custom-css-urls', function() {
       execSync("rm -r " + path.join(process.cwd(), './.test_dist_img'));
       execSync("rm -r " + path.join(process.cwd(), './.test_dist_jade'));
       done();
-    },3000);
+    },5000);
   })
 });
