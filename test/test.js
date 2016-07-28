@@ -91,7 +91,12 @@ describe('gulp-custom-css-urls', function() {
     vfs.src('test/views/forcemodify.html')
       .pipe(customCssUrls({
         forceModify: function (imageUrl, filePath) {
-          return imageUrl.replace('https://demo.com', '');
+          var qiniu_host = 'https://demo.com';
+          var ext = path.extname(imagesUrl);
+            if (!ext) {
+                return imagesUrl;
+            }
+            return imagesUrl.replace(ext, '').replace(qiniu_host, '').replace(/_\d{1,}_\d{1,}\.\d{1,}$/, '') + ext;
         },
         ext: 'html'
       }))

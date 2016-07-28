@@ -49,9 +49,27 @@ gulp.task('jadeDemo',function() {
       ext: 'jade',
       outputImage_path: './.test_dist_img'
     }))
-})
+});
+
+//rollback template content
+gulp.task('returnToOrigin', function() {
+  return gulp.src('views/forcemodify.html')
+    .pipe(customCssUrls({
+      forceModify: function (imageUrl, filePath) {
+        var qiniu_host = 'https://demo.com';
+        var ext = path.extname(imagesUrl);
+        if (!ext) {
+        return imagesUrl;
+        }
+        return imagesUrl.replace(ext, '').replace(qiniu_host, '').replace(/_\d{1,}_\d{1,}\.\d{1,}$/, '') + ext;
+      },
+      ext: 'html'
+    }))
+    .pipe(gulp.dest('views/'))
+});
 gulp.task('default',['cssDemo']);
-gulp.task('jade',['jadeDemo'])
+gulp.task('jade',['jadeDemo']);
+gulp.task('originTemplateContent',['returnToOrigin']);
 ```
 
 //css file content, input:
