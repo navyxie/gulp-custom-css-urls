@@ -19,14 +19,14 @@ function dataBase64() {
     });
 }
 describe('gulp-custom-css-urls', function() {
-  this.timeout(5000);
+  this.timeout(8000);
   var staticfile_relative_website_rootpath =  'test/assets/';
-  it('should not change anything in fileContents if image url is data:base64', function () {
+  it('css -> should not change anything in fileContents if image url is data:base64', function () {
     vfs.src('test/assets/styles/example3.css')
       .pipe(customCssUrls())
       .pipe(dataBase64())
   });
-  it('should be ok if image url is relative to website root path', function (done) {
+  it('css -> should be ok if image url is relative to website root path', function (done) {
     vfs.src('test/assets/styles/example1.css')
       .pipe(customCssUrls({
         staticfile_relative_website_rootpath: staticfile_relative_website_rootpath,
@@ -39,7 +39,7 @@ describe('gulp-custom-css-urls', function() {
         }
       }))
   });
-  it('should be ok if image url is relative to css file path', function (done) {
+  it('css -> should be ok if image url is relative to css file path', function (done) {
     vfs.src('test/assets/styles/example2.css')
       .pipe(customCssUrls({
         staticfile_relative_website_rootpath: staticfile_relative_website_rootpath,
@@ -54,9 +54,26 @@ describe('gulp-custom-css-urls', function() {
         outputImage_path: './.test_dist_img'
       }))
   });
+  it('jade -> should be ok if image url is relative to website root path', function () {
+    vfs.src('test/views/test.jade')
+      .pipe(customCssUrls({
+        staticfile_relative_website_rootpath: staticfile_relative_website_rootpath,
+        modify: function (imageRelativePath, cssFilePath, imageRelativeWebsiteRootPath, imgInfo) {
+          imageRelativePath.should.equal('example_1968_920.1373564769.png');
+          imageRelativeWebsiteRootPath.should.equal('/images');
+          imgInfo.should.have.properties({hash: 1373564769, width: 1968, height: 920, orgin_filename: 'example.png' });
+          return path.join(imageRelativeWebsiteRootPath, imageRelativePath);
+        },
+        outputImage: true,
+        ext: 'jade',
+        outputImage_path: './.test_dist_img'
+      }))
+      .pipe(vfs.dest('./.test_dist_jade'))
+  });
   after(function(done){
     setTimeout(function () {
       execSync("rm -r " + path.join(process.cwd(), './.test_dist_img'));
+      execSync("rm -r " + path.join(process.cwd(), './.test_dist_jade'));
       done();
     },3000);
   })

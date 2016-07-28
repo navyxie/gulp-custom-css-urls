@@ -10,7 +10,7 @@ a plugin for gulp to custom you image url inline css file, and support output im
 var customCssUrls = require('gulp-custom-css-urls');
 var gulp = require('gulp');
 var path = require('path');
-gulp.task('demo',function(){
+gulp.task('cssDemo',function(){
   return gulp.src('assets/**/*.css')
     .pipe(customCssUrls({
       /** 
@@ -34,8 +34,24 @@ gulp.task('demo',function(){
       processPath: process.cwd() // custom process path , default to process.cwd()
     }))
     .pipe(gulp.dest('tmp/'));
+});
+gulp.task('jadeDemo',function() {
+  return gulp.src('views/test.jade')
+    .pipe(customCssUrls({
+      staticfile_relative_website_rootpath: staticfile_relative_website_rootpath,
+      modify: function (imageRelativePath, cssFilePath, imageRelativeWebsiteRootPath, imgInfo) {
+        imageRelativePath.should.equal('example_1968_920.1373564769.png');
+        imageRelativeWebsiteRootPath.should.equal('/images');
+        imgInfo.should.have.properties({hash: 1373564769, width: 1968, height: 920, orgin_filename: 'example.png' });
+        return path.join(imageRelativeWebsiteRootPath, imageRelativePath);
+      },
+      outputImage: true,
+      ext: 'jade',
+      outputImage_path: './.test_dist_img'
+    }))
 })
-gulp.task('default',['demo']);
+gulp.task('default',['cssDemo']);
+gulp.task('jade',['jadeDemo'])
 ```
 
 //css file content, input:

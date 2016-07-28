@@ -1,6 +1,6 @@
 {
   "name": "gulp-custom-css-urls",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "a gulp plugin custom image url inline in css",
   "main": "index.js",
   "scripts": {
