@@ -26,6 +26,9 @@ function syncFileToBuffer (filepath) {
 
 var extList = ['.BMP', '.JPG', '.JPEG', '.PNG', '.GIF'];
 
+function isInExtList (ext) {
+  return (_.indexOf(extList, ext) !== -1);
+}
 /**
  * filePath current filepath
  * url staticfile(image) url
@@ -72,7 +75,7 @@ function formatUrl (filePath, url, options) {
     }
 
     // skip when static file not in extList
-    if (_.indexOf(extList, path.extname(formattedUrl).toUpperCase()) === -1) {
+    if (!isInExtList(path.extname(formattedUrl).toUpperCase())) {
       return formattedUrl;
     }
 
@@ -142,7 +145,7 @@ function customContent (fileContents, filePath, options) {
   var srcReg = /(src=)['"]?([^'"]*)['"]?/i;
   fileContents = fileContents.replace(imgReg, function (srcStr) {
     return srcStr.replace(srcReg, function (originStr, srcEqualStr, imageUrl) {
-      if (srcEqualStr && imageUrl) {
+      if (srcEqualStr && imageUrl && isInExtList(path.extname(imageUrl).toUpperCase())) {
         return srcEqualStr + "'" + formatUrl(filePath, imageUrl, options) + "'";
       } else {
         return srcStr;

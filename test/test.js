@@ -90,13 +90,13 @@ describe('gulp-custom-css-urls', function() {
   it('html -> forceModify()  should be ok if image url is relative to website root path', function () {
     vfs.src('test/views/forcemodify.html')
       .pipe(customCssUrls({
-        forceModify: function (imageUrl, filePath) {
+        forceModify: function (imagesUrl, filePath) {
           var qiniu_host = 'https://demo.com';
           var ext = path.extname(imagesUrl);
-            if (!ext) {
-                return imagesUrl;
-            }
-            return imagesUrl.replace(ext, '').replace(qiniu_host, '').replace(/_\d{1,}_\d{1,}\.\d{1,}$/, '') + ext;
+          if (!ext) {
+              return imagesUrl;
+          }
+          return imagesUrl.replace(ext, '').replace(qiniu_host, '').replace(/_\d{1,}_\d{1,}\.\d{1,}$/, '') + ext;
         },
         ext: 'html'
       }))

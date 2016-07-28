@@ -86,6 +86,13 @@ gulp.task('originTemplateContent',['returnToOrigin']);
 
 ## change log
 
+- 0.2.2
+
+  ```
+  bug fix:
+    when template contain script, and have code xxx.src=xxx, will cause bug.
+  ```
+
 - 0.2.0
 
   ```
