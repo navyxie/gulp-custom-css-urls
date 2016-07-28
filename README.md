@@ -69,12 +69,23 @@ gulp.task('jade',['jadeDemo'])
 ## change log
 
 - 0.2.0
+
+  ```
   add option forceModify:
     which is a function , change url and direct return result.
+  ```
+  
 - 0.1.0
+
+  ```
   add option ext:
     which support css, html ,jade, default css.
   add option skip:
-    which is a array, url will skip when contain character in skip array
+    which is a array, url will skip when contain character in skip array.
+  ```
+
 - 0.0.1
-  only support css file
+
+  ```
+  only support css file.
+  ```
