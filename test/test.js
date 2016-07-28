@@ -87,6 +87,16 @@ describe('gulp-custom-css-urls', function() {
       }))
       .pipe(vfs.dest('./.test_dist_jade'))
   });
+  it('html -> forceModify()  should be ok if image url is relative to website root path', function () {
+    vfs.src('test/views/forcemodify.html')
+      .pipe(customCssUrls({
+        forceModify: function (imageUrl, filePath) {
+          return imageUrl.replace('https://demo.com', '');
+        },
+        ext: 'html'
+      }))
+      .pipe(vfs.dest('./.test_dist_jade'))
+  });
   after(function(done){
     setTimeout(function () {
       execSync("rm -r " + path.join(process.cwd(), './.test_dist_img'));

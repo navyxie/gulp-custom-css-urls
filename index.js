@@ -36,6 +36,7 @@ function formatUrl (filePath, url, options) {
   var cssDirname = path.dirname(filePath);
   // options
   var modify = options.modify; // function you can modify return url before prepend or append
+  var forceModify = options.forceModify // first call and return.
   var prepend = options.prepend;
   var append = options.append;
   var skip = options.skip || [];
@@ -47,10 +48,17 @@ function formatUrl (filePath, url, options) {
   var formattedUrl = url; // image origin filepath
   var imgAbsolutePath = formattedUrl; // image absolute filepath
   try {
+    
     //if images url is data:base64 , continue
     if (formattedUrl.indexOf('data:') === 0) {
       return formattedUrl;
     }
+
+    //if support forceModify function , call it and return result
+    if (_.isFunction(forceModify)) {
+      return forceModify(formattedUrl, filePath);
+    }
+
     // if images url is netword file , continue
     if (/^(http|https|ftp|\/\/)/gi.test(formattedUrl)) {
       return formattedUrl;
